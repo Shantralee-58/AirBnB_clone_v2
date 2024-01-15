@@ -16,13 +16,27 @@ class test_state(TestBaseModel):
     def __init__(self, *args, **kwargs):
         """ Init the state test class and its super"""
         super().__init__(*args, **kwargs)
+
+        # Retrieve MySQL connection parameters from environment variables
+        host = os.getenv("HBNB_MYSQL_HOST")
+        user = os.getenv("HBNB_MYSQL_USER")
+        passwd = os.getenv("HBNB_MYSQL_PWD")
+        db = os.getenv("HBNB_MYSQL_DB")
+
+        # Check if any parameter is None and set default values if needed
+        host = host or "localhost"
+        user = user or "root"
+        passwd = passwd or ""
+        db = db or "test_db"
+
+        # Establish the MySQL connection
         self.db = MySQLdb.connect(
-            host=os.getenv("HBNB_MYSQL_HOST"),
+            host=host,
             port=3306,
-            user=os.getenv("HBNB_MYSQL_USER"),
-            passwd=os.getenv("HBNB_MYSQL_PWD"),
-            database=os.getenv("HBNB_MYSQL_DB")
-            )
+            user=user,
+            passwd=passwd,
+            database=db
+        )
 
         self.cur = self.db.cursor()
 
@@ -115,4 +129,3 @@ class test_state(TestBaseModel):
         self.cur.execute("SELECT id, state_id FROM cities")
 
         self.assertTrue(len(self.cur.fetchall()) == 0)
-        
