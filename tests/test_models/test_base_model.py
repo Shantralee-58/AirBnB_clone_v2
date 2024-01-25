@@ -138,5 +138,4 @@ class TestBaseModel(unittest.TestCase):
         pattern = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}")
 
         self.assertRegex(update, pattern)
-        self.assertRegex(create, pattern)
-        
+        self.assertRegex(create, pattern)        

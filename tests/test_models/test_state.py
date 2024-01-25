@@ -10,11 +10,11 @@ import os
 import MySQLdb
 
 
-class test_state(TestBaseModel):
-    """subClass of unittest to test State class """
+class TestState(TestBaseModel):
+    """Subclass of unittest to test State class"""
 
     def __init__(self, *args, **kwargs):
-        """ Init the state test class and its super"""
+        """Init the state test class and its super"""
         super().__init__(*args, **kwargs)
 
         # Retrieve MySQL connection parameters from environment variables
@@ -44,14 +44,14 @@ class test_state(TestBaseModel):
         self.value = State
 
     def test_name3(self):
-        """ Test the State name attribute"""
+        """Test the State name attribute"""
         new = self.value(name="Khar")
         self.assertEqual(type(new.name), str)
 
     @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "file_storage",
                      "Test only on the file storage")
     def test_state_cities(self):
-        """ Test the cities relatioship with the state in file_storage system
+        """Test the cities relationship with the state in file_storage system
         """
 
         from models.city import City
@@ -75,8 +75,8 @@ class test_state(TestBaseModel):
 
     @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "db",
                      "Test only on the database storage systems")
-    def test_state_cities(self):
-        """ Test the cities relatioship with the state in database system
+    def test_state_cities_db(self):
+        """Test the cities relationship with the state in database system
         """
         from models.city import City
 
@@ -105,12 +105,11 @@ class test_state(TestBaseModel):
     @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "db",
                      "Test only on the database storage systems")
     def test_state_cities_relations(self):
-        """ Test the relationship between state and ccities in
+        """Test the relationship between state and cities in
         a database system
         """
         from models import storage
         from models.city import City
-
         Base.metadata.drop_all(storage._DBStorage__engine)
         Base.metadata.create_all(storage._DBStorage__engine)
 
@@ -129,3 +128,6 @@ class test_state(TestBaseModel):
         self.cur.execute("SELECT id, state_id FROM cities")
 
         self.assertTrue(len(self.cur.fetchall()) == 0)
+
+if __name__ == "__main__":
+    unittest.main()

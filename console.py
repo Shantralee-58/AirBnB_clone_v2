@@ -302,7 +302,7 @@ class HBNBCommand(cmd.Cmd):
         # first determine if kwargs or args
         if '{' in args[2] and '}' in args[2] and type(eval(args[2])) is dict:
             kwargs = eval(args[2])
-            args = []  # reformat kwargs into a list, ex: [<name>, <value>, ...]
+            args = []  # reformat kwargs to a list
             for k, v in kwargs.items():
                 args.append(k)
                 args.append(v)
