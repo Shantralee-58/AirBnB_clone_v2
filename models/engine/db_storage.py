@@ -6,21 +6,24 @@ from os import getenv
 
 
 class DBStorage:
-
     __engine = None
     __session = None
 
     def __init__(self):
         from models.base_model import Base
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(getenv('HBNB_MYSQL_USER'),
-                                             getenv('HBNB_MYSQL_PWD'),
-                                             getenv('HBNB_MYSQL_HOST'),
-                                             getenv('HBNB_MYSQL_DB')),
-                                      pool_pre_ping=True,
-                                      isolation_level="READ COMMITTED")
 
-        if getenv('HBNB_ENV') == 'test':
+        self.__engine = create_engine(
+            "mysql+mysqldb://{}:{}@{}/{}".format(
+                getenv("HBNB_MYSQL_USER"),
+                getenv("HBNB_MYSQL_PWD"),
+                getenv("HBNB_MYSQL_HOST"),
+                getenv("HBNB_MYSQL_DB"),
+            ),
+            pool_pre_ping=True,
+            isolation_level="READ COMMITTED",
+        )
+
+        if getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
@@ -39,8 +42,7 @@ class DBStorage:
             for c in classes:
                 objs += self.__session.query(c)
 
-        return {'{}.{}'.format(type(obj).__name__, obj.id):
-                obj for obj in objs}
+        return {"{}.{}".format(type(obj).__name__, obj.id): obj for obj in objs}
 
     def new(self, obj):
         if obj in self.__session:
@@ -68,7 +70,7 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
 
         DBStorage.Session = scoped_session(
-            sessionmaker(bind=self.__engine, expire_on_commit=False))
+            sessionmaker(bind=self.__engine, expire_on_commit=False)
+        )
 
         self.__session = DBStorage.Session()
-        
