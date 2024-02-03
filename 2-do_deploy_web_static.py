@@ -1,34 +1,30 @@
 #!/usr/bin/python3
-from fabric import task
-from os import path
+"""
+Fabric the script based on the file 1-pack_web_static.py that distributes an
+archive to the web servers
+"""
 
-env.hosts = ['3.85.148.96', '54.234.58.58']
-env.user = 'ubuntu'  # Replace with your SSH username
+from fabric.api import put, run, env
+from os.path import exists
+env.hosts = ['100.26.53.73', '54.172.202.6']
 
-@task
-def do_deploy(c, archive_path):
-    """Distributes an archive to web servers"""
-    if not path.exists(archive_path):
+
+def do_deploy(archive_path):
+    """distributes archive to the web servers"""
+    if exists(archive_path) is False:
         return False
-
-    filename = path.basename(archive_path)
-    root = '/data/web_static/releases/'
-    dest = f'{root}{filename.split(".")[0]}'
-
-    # Upload the archive to the /tmp/ directory of the web server
-    c.put(archive_path, '/tmp/')
-
-    # Uncompress the archive to the folder /data/web_static/releases/<archive filename without extension>
-    c.run(f'mkdir -p {dest}')
-    c.run(f'tar -xzf /tmp/{filename} -C {dest}')
-
-    # Delete the archive from the web server
-    c.run(f'rm /tmp/{filename}')
-
-    # Delete the symbolic link /data/web_static/current from the web server
-    c.run('rm -rf /data/web_static/current')
-
-    # Create a new symbolic link /data/web_static/current linked to the new version of your code
-    c.run(f'ln -s {dest} /data/web_static/current')
-
-    return True
+    try:
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]
+        path = "/data/web_static/releases/"
+        put(archive_path, '/tmp/')
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('rm /tmp/{}'.format(file_n))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
+        return True
+    except:
+        return False
