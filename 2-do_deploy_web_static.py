@@ -8,7 +8,6 @@ import os
 import os.path
 
 
-env.user = 'ubuntu'
 env.hosts = ['18.207.207.212', '54.237.74.142']
 
 
