@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Fabric the script based on the file 1-pack_web_static.py that distributes an
+Fabric script based on the file 1-pack_web_static.py that distributes an
 archive to the web servers
 """
 
@@ -10,7 +10,7 @@ env.hosts = ['18.207.207.212', '54.237.74.142']
 
 
 def do_deploy(archive_path):
-    """distributes archive to the web servers"""
+    """distributes an archive to the web servers"""
     if exists(archive_path) is False:
         return False
     try:
