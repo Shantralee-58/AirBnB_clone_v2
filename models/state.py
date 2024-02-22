@@ -1,38 +1,40 @@
 #!/usr/bin/python3
-""" """
+"""Defines the State class."""
+import models
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
 from models.city import City
-from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship, aliased
-import os
+from os import getenv
 
 
 class State(BaseModel, Base):
-    __tablename__ = 'states'
+    """Represents a state for a MySQL database.
 
+    Inherits from SQLAlchemy Base and links to the MySQL table states.
+
+    Attributes:
+        __tablename__ (str): The name of the MySQL table to store States.
+        name (sqlalchemy String): The name of the State.
+        cities (sqlalchemy relationship): The State-City relationship.
+    """
+    __tablename__ = "states"
     name = Column(String(128), nullable=False)
 
-    # in databases systems
-    if os.getenv("HBNB_TYPE_STORAGE") == "db":
-        # Relationship with City
-        cities = relationship('City', backref='state',
-                              cascade='all, delete-orphan')
-    # in file_storage systems
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        cities = relationship("City", backref="state", cascade="all, delete")
     else:
         @property
         def cities(self):
-            """ getter attribute that return all cities linked to this state
+            """Get a list of City instances with
+                state_id equals to the current State.id.
+
+            This is a getter attribute for FileStorage
+                relationship between State and City.
             """
-            from models import storage
-            cities = [city for city in storage.all(City).values()
-                      if city.state_id == self.id]
-            return cities
-
-    def __init__(self, *args, **kwargs):
-        """ Initiate the instance with some default values and call the
-        super init to complete the initiate
-        """
-        super().__init__(*args, **kwargs)
-
-
-aliased_state = aliased(State, name='state')
+            city_list = []
+            for city in models.storage.all(City).values():
+                if city.state_id == self.id:
+                    city_list.append(city)
+            return city_list
+            
